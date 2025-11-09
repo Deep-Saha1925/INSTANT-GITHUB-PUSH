@@ -1,7 +1,8 @@
 {
-  "name": "instant-github-push",
-  "displayName": "instant-github-push",
-  "description": "",
+  "name": "giteasy",
+  "displayName": "GitEasy",
+  "publisher": "DeepSaha-1925",
+  "description": "Push your VS Code workspace to GitHub in one click.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.105.0"
@@ -15,10 +16,6 @@
   "main": "./extension.js",
   "contributes": {
     "commands": [
-      {
-        "command": "instant-github-push.helloWorld",
-        "title": "Hello World"
-      },
       {
         "command": "extension.createAndPushRepo",
         "title": "Create & Push to GitHub"
@@ -36,13 +33,13 @@
     "@types/vscode": "^1.105.0",
     "@vscode/test-cli": "^0.0.11",
     "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.36.0"
+    "eslint": "^9.36.0",
+    "vscode": "^1.1.37"
   },
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "node-fetch": "^2.7.0",
-    "open": "^10.2.0",
-    "vscode": "^1.1.37"
+    "open": "^10.2.0"
   }
 }
