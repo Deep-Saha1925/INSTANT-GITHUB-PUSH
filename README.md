@@ -1,79 +1,69 @@
-# 🚀 GitHub Instant Push VS Code Extension
+# 🚀 GitEasy — VS Code Extension
 
-**GitHub Instant Push** is a VS Code extension that lets you authenticate with GitHub, create a repository, and push your workspace code directly — all in just a few clicks.
+**GitEasy** is a lightweight Visual Studio Code extension that allows developers to quickly create a new GitHub repository and push their local code — all directly from VS Code!
 
----
-
-## Features
-
-- 🔑 Authenticate with GitHub using OAuth.
-- 📦 Create a new repository on your GitHub account.
-- 🚀 Push your entire VS Code workspace to the newly created repository.
-- 🌐 No need to leave VS Code — everything happens in-app.
-- ⚡ Fast, simple, and efficient workflow for developers.
+No need to open GitHub manually or type complex Git commands. Just authorize once, and you’re ready to go.
 
 ---
 
-## Installation
+## ✨ Features
+
+- 🔐 **GitHub OAuth Authorization** — Securely connects to your GitHub account through OAuth.  
+- 🧠 **Automatic Repository Creation** — Instantly create a new repository right from VS Code.  
+- ⚡ **One-Click Push** — Push your current workspace to GitHub in seconds.  
+- 🪶 **Simple Workflow** — No terminal commands, no manual configuration.  
+
+---
+
+## 🧩 How to Use
+
+### 1️⃣ Install the Extension
+Search for **“GitEasy”** in the VS Code Extensions Marketplace and install it.
+
+### 2️⃣ Open Your Project Folder
+Make sure your VS Code workspace contains the project you want to upload to GitHub.
+
+### 3️⃣ Run the Command
+Press `Ctrl + Shift + P` (or `Cmd + Shift + P` on macOS).  
+Type **“Create and Push to GitHub”** and hit Enter.
+
+### 4️⃣ Authorize GitHub
+A browser window will open asking for GitHub authorization.  
+Log in and allow the extension to access your account.  
+Once authorized, the extension will automatically create a new GitHub repository for you.
+
+### 5️⃣ Enter Repository Name
+You’ll be prompted to enter a name for your new repo.  
+The extension then commits your current project and pushes it to the new GitHub repository.
+
+---
+
+## 🧾 Example Flow
 
 ```bash
-# Clone the extension repository
-git clone <your-repo-url>
-
-# Navigate into the project folder
-cd <your-repo-folder>
-
-# Install dependencies
-npm install
-
-# Open the folder in VS Code
-code .
+> Ctrl + Shift + P  
+> Create and Push to GitHub  
+> (Browser opens → Authorize GitHub)  
+> Enter Repository Name: instant-github-demo  
+> ✅ Successfully pushed to https://github.com/<your-username>/instant-github-demo
 ```
 
-## Running the Extension
+---
 
-```bash
-# Press F5 in VS Code to launch a new Extension Development Host window
-# Then run the command "GitHub Instant Push: Create and Push Repo" from the Command Palette (Ctrl+Shift+P)
-```
+## 🔒 Security
 
-## Usage
-```bash
-# 1. Open a folder in VS Code that you want to push to GitHub
-# 2. Trigger the extension via Command Palette:
-#    GitHub Instant Push: Create and Push Repo
-# 3. Login with your GitHub account in the browser
-# 4. Enter the repository name in the input box
-# 5. The extension will create the repo, initialize Git, and push all files to GitHub
-```
+- OAuth is handled securely through GitHub’s official API.  
+- Your GitHub token is **never stored permanently** — it’s used only during the authorized session.
 
-## Requirements
-```bash
-# Node.js installed
-# Git installed and available in PATH
-# A GitHub account
-```
+---
 
-## Configuration
-```bash
-# Create a .env file at the root of your extension with the following:
+## 💡 Notes
 
-CLIENT_ID=<your_github_client_id>
-CLIENT_SECRET=<your_github_client_secret>
-PORT=3000
+- You must have **Git installed and configured** locally.  
+- Internet connection is required during repo creation and push.
 
-```
+---
 
-## Contributing
-```bash
-# Contributions are welcome! 
-# Open issues, submit pull requests, or suggest new features.
+## 🧑‍💻 Author
 
-```
-
-## # MIT License
-
-```bash
-# MIT License
-
-```
+Developed by **Deep Saha** — making developer workflows simpler and faster.

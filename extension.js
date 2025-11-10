@@ -1,6 +1,5 @@
 const vscode = require("vscode");
 const express = require("express");
-const open = require("open");
 const fetch = require("node-fetch");
 const { execSync } = require("child_process");
 const path = require("path");
@@ -16,13 +15,11 @@ async function activate(context) {
     "extension.createAndPushRepo",
     async function () {
       if (!CLIENT_ID || !CLIENT_SECRET) {
-        vscode.window.showErrorMessage(
-          "❌ Missing CLIENT_ID or CLIENT_SECRET in .env file!"
-        );
+        vscode.window.showErrorMessage("Missing CLIENT_ID or CLIENT_SECRET in .env file!");
         return;
       }
 
-      vscode.window.showInformationMessage("🔑 Redirecting to GitHub for authorization...");
+      vscode.window.showInformationMessage("Redirecting to GitHub for authorization...");
 
       const app = express();
       let server;
@@ -30,18 +27,18 @@ async function activate(context) {
       // Step 1: Create GitHub OAuth URL
       const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=repo`;
 
-      // Step 2: Open GitHub OAuth URL in browser
-      await open(authUrl);
+      // Step 2: Open GitHub OAuth URL in browser (VS Code API)
+      vscode.env.openExternal(vscode.Uri.parse(authUrl));
 
-      // Step 3: Handle OAuth callback
+      // Step 3: Start local Express server for OAuth callback
       server = app.listen(PORT, () => {
-        console.log(`🌐 Listening for GitHub OAuth callback on port ${PORT}`);
+        console.log(`Listening for GitHub OAuth callback on port ${PORT}`);
       });
 
       app.get("/callback", async (req, res) => {
         const code = req.query.code;
         if (!code) {
-          res.send("❌ Authorization failed or cancelled.");
+          res.send("Authorization failed or cancelled.");
           return;
         }
 
@@ -65,19 +62,18 @@ async function activate(context) {
           const accessToken = tokenData.access_token;
 
           if (!accessToken) {
-            res.send("❌ Failed to obtain GitHub access token. Please retry.");
+            res.send("Failed to obtain GitHub access token. Please retry.");
             return;
           }
 
-          res.send("<h2>✅ GitHub authorization successful! You can close this tab.</h2>");
+          res.send("<h2>GitHub authorization successful! You can close this tab.</h2>");
           server.close();
 
-          vscode.window.showInformationMessage("✅ GitHub authorized successfully!");
+          vscode.window.showInformationMessage("GitHub authorized successfully!");
           await createAndPushRepo(accessToken);
-
         } catch (error) {
           console.error("GitHub OAuth Error:", error);
-          res.send("❌ OAuth process failed. Check VS Code logs for details.");
+          res.send("OAuth process failed. Check VS Code logs for details.");
           server.close();
         }
       });
