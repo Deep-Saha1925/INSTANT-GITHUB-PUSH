@@ -41,5 +41,10 @@
     "express": "^5.1.0",
     "node-fetch": "^2.7.0",
     "open": "^10.2.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DeepSaha-1925/giteasy.git"
+  },
+  "license": "MIT"
 }
