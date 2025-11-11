@@ -61,7 +61,6 @@ The extension then commits your current project and pushes it to the new GitHub 
 
 - You must have **Git installed and configured** locally.  
 - Internet connection is required during repo creation and push.
-
 ---
 
 ## 🧑‍💻 Author
