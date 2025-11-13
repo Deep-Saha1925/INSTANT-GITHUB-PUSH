@@ -12,14 +12,20 @@ app.get("/callback", async (req, res) => {
   if (!code) return res.send("❌ Missing code from GitHub.");
 
   try {
+    // 🔧 CHANGE THIS PART ONLY
     const tokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
-      {
+      new URLSearchParams({
         client_id: process.env.GITHUB_CLIENT_ID,
         client_secret: process.env.GITHUB_CLIENT_SECRET,
         code,
-      },
-      { headers: { Accept: "application/json" } }
+      }),
+      {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
     );
 
     const { access_token } = tokenResponse.data;

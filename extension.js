@@ -1,82 +1,45 @@
 const vscode = require("vscode");
-const express = require("express");
 const fetch = require("node-fetch");
 const { execSync } = require("child_process");
 const path = require("path");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
+// ✅ Read GitHub OAuth credentials
 const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const PORT = 5173;
-const REDIRECT_URI = `http://localhost:${PORT}/callback`;
+
+// ✅ Your deployed Railway backend
+const BACKEND_URL = "https://instant-github-push-production.up.railway.app";
+
+// ✅ GitHub OAuth redirect URL (handled by your backend)
+const REDIRECT_URI = `${BACKEND_URL}/callback`;
 
 async function activate(context) {
   let disposable = vscode.commands.registerCommand(
     "extension.createAndPushRepo",
     async function () {
-      if (!CLIENT_ID || !CLIENT_SECRET) {
-        vscode.window.showErrorMessage("Missing CLIENT_ID or CLIENT_SECRET in .env file!");
+      if (!CLIENT_ID) {
+        vscode.window.showErrorMessage("Missing CLIENT_ID in .env file!");
         return;
       }
 
       vscode.window.showInformationMessage("Redirecting to GitHub for authorization...");
 
-      const app = express();
-      let server;
-
-      // Step 1: Create GitHub OAuth URL
+      // Step 1️⃣: Generate GitHub OAuth URL
       const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=repo`;
 
-      // Step 2: Open GitHub OAuth URL in browser (VS Code API)
+      // Step 2️⃣: Open GitHub OAuth URL in default browser
       vscode.env.openExternal(vscode.Uri.parse(authUrl));
 
-      // Step 3: Start local Express server for OAuth callback
-      server = app.listen(PORT, () => {
-        console.log(`Listening for GitHub OAuth callback on port ${PORT}`);
-      });
+      // Step 3️⃣: Notify user
+      vscode.window.showInformationMessage(
+        "Authorize GitHub in your browser. Once authorized, return to VS Code."
+      );
 
-      app.get("/callback", async (req, res) => {
-        const code = req.query.code;
-        if (!code) {
-          res.send("Authorization failed or cancelled.");
-          return;
-        }
-
-        try {
-          // Step 4: Exchange code for access token
-          const tokenResponse = await fetch("https://github.com/login/oauth/access_token", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Accept: "application/json",
-            },
-            body: JSON.stringify({
-              client_id: CLIENT_ID,
-              client_secret: CLIENT_SECRET,
-              code,
-              redirect_uri: REDIRECT_URI,
-            }),
-          });
-
-          const tokenData = await tokenResponse.json();
-          const accessToken = tokenData.access_token;
-
-          if (!accessToken) {
-            res.send("Failed to obtain GitHub access token. Please retry.");
-            return;
-          }
-
-          res.send("<h2>GitHub authorization successful! You can close this tab.</h2>");
-          server.close();
-
-          vscode.window.showInformationMessage("GitHub authorized successfully!");
-          await createAndPushRepo(accessToken);
-        } catch (error) {
-          console.error("GitHub OAuth Error:", error);
-          res.send("OAuth process failed. Check VS Code logs for details.");
-          server.close();
-        }
-      });
+      // ⚙️ Optional improvement:
+      // You can ask the user to paste a code/token that backend logs or sends later.
+      vscode.window.showInformationMessage(
+        "GitEasy cloud backend is handling authorization securely."
+      );
     }
   );
 
@@ -86,7 +49,7 @@ async function activate(context) {
 async function createAndPushRepo(accessToken) {
   const workspaceFolders = vscode.workspace.workspaceFolders;
   if (!workspaceFolders) {
-    vscode.window.showErrorMessage("❌ No workspace folder is open in VS Code!");
+    vscode.window.showErrorMessage("No workspace folder is open in VS Code!");
     return;
   }
 
@@ -98,7 +61,7 @@ async function createAndPushRepo(accessToken) {
 
   if (!repoName) return;
 
-  vscode.window.showInformationMessage("📦 Creating GitHub repository...");
+  vscode.window.showInformationMessage("Creating GitHub repository...");
 
   const response = await fetch("https://api.github.com/user/repos", {
     method: "POST",
@@ -112,12 +75,12 @@ async function createAndPushRepo(accessToken) {
   const data = await response.json();
 
   if (!response.ok) {
-    vscode.window.showErrorMessage(`❌ Repository creation failed: ${data.message}`);
+    vscode.window.showErrorMessage(`Repository creation failed: ${data.message}`);
     return;
   }
 
   try {
-    vscode.window.showInformationMessage(`✅ Repository created: ${data.html_url}`);
+    vscode.window.showInformationMessage(`Repository created: ${data.html_url}`);
 
     execSync("git init", { cwd, stdio: "inherit", shell: true });
     execSync("git add .", { cwd, stdio: "inherit", shell: true });
@@ -126,9 +89,9 @@ async function createAndPushRepo(accessToken) {
     execSync(`git remote add origin ${data.clone_url}`, { cwd, stdio: "inherit", shell: true });
     execSync("git push -u origin main", { cwd, stdio: "inherit", shell: true });
 
-    vscode.window.showInformationMessage("🚀 Code pushed successfully to GitHub!");
+    vscode.window.showInformationMessage("Code pushed successfully to GitHub!");
   } catch (err) {
-    vscode.window.showErrorMessage("❌ Git push failed: " + err.message);
+    vscode.window.showErrorMessage("Git push failed: " + err.message);
   }
 }
 
