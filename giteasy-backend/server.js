@@ -12,14 +12,13 @@ app.get("/callback", async (req, res) => {
   if (!code) return res.send("❌ Missing code from GitHub.");
 
   try {
-    // 🔧 CHANGE THIS PART ONLY
     const tokenResponse = await axios.post(
       "https://github.com/login/oauth/access_token",
       new URLSearchParams({
         client_id: process.env.GITHUB_CLIENT_ID,
         client_secret: process.env.GITHUB_CLIENT_SECRET,
         code,
-      }),
+      }).toString(),
       {
         headers: {
           Accept: "application/json",
@@ -28,16 +27,23 @@ app.get("/callback", async (req, res) => {
       }
     );
 
-    const { access_token } = tokenResponse.data;
-    if (!access_token) return res.send("❌ Failed to get token.");
+    const { access_token, error, error_description } = tokenResponse.data;
 
+    if (error) {
+      console.error("GitHub error:", error_description);
+      return res.send("❌ GitHub OAuth error: " + error_description);
+    }
+
+    if (!access_token) return res.send("❌ No access token received.");
+
+    console.log("✅ Access token received:", access_token);
     res.send("✅ Authorized! You can close this tab and return to VS Code.");
-    console.log("Access token:", access_token);
   } catch (err) {
-    console.error(err);
-    res.send("❌ OAuth failed.");
+    console.error("OAuth error:", err.response?.data || err.message);
+    res.send("❌ OAuth failed. See logs for details.");
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log("Server running on port", PORT));
