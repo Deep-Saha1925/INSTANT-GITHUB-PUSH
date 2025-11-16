@@ -1,46 +1,55 @@
 {
   "name": "giteasy",
-  "displayName": "GitEasy",
+  "displayName": "GITEasy",
+  "description": "Automatically create and push your code to GitHub without manual work",
+  "version": "1.0.0",
   "publisher": "DeepSaha-1925",
-  "description": "Push your VS Code workspace to GitHub in one click.",
-  "version": "0.0.2",
+  "icon": "images/icon.png",
   "engines": {
-    "vscode": "^1.105.0"
+    "vscode": "^1.75.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "SCM Providers"
   ],
-  "activationEvents": [
-    "onCommand:extension.createAndPushRepo"
+  "keywords": [
+    "git",
+    "github",
+    "push",
+    "repository",
+    "automation"
   ],
+  "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "extension.createAndPushRepo",
-        "title": "Create & Push to GitHub"
+        "command": "giteasy.createAndPush",
+        "title": "Create and Push to GitHub",
+        "category": "GITEasy"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "giteasy.createAndPush",
+        "key": "ctrl+shift+g ctrl+shift+p",
+        "mac": "cmd+shift+g cmd+shift+p"
       }
     ]
   },
   "scripts": {
     "lint": "eslint .",
     "pretest": "npm run lint",
-    "test": "vscode-test"
+    "test": "node ./test/runTest.js"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.105.0",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.36.0",
-    "vscode": "^1.1.37"
+    "@types/vscode": "^1.75.0",
+    "@vscode/test-electron": "^2.0.0",
+    "eslint": "^8.0.0"
   },
   "dependencies": {
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "node-fetch": "^2.7.0",
-    "open": "^10.2.0"
+    "axios": "^1.13.2",
+    "express": "^4.18.0"
   },
   "repository": {
     "type": "git",

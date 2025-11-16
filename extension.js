@@ -1,100 +1,109 @@
-const vscode = require("vscode");
-const fetch = require("node-fetch");
-const { execSync } = require("child_process");
-const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, ".env") });
+const vscode = require('vscode');
+const { authenticate } = require('./auth');
+const { createAndPushRepo } = require('./github');
 
-// ✅ Read GitHub OAuth credentials
-const CLIENT_ID = process.env.CLIENT_ID;
+/**
+ * @param {vscode.ExtensionContext} context
+ */
+function activate(context) {
+    console.log('GITEasy extension is now active!');
 
-// ✅ Your deployed Railway backend
-const BACKEND_URL = "https://instant-github-push-production.up.railway.app";
+    let disposable = vscode.commands.registerCommand('giteasy.createAndPush', async function () {
+        try {
+            // Show initial message
+            vscode.window.showInformationMessage('Starting GITEasy - GitHub repository creation...');
 
-// ✅ GitHub OAuth redirect URL (handled by your backend)
-const REDIRECT_URI = `${BACKEND_URL}/callback`;
+            // Step 1: Authenticate with GitHub
+            const accessToken = await authenticate(context);
+            
+            if (!accessToken) {
+                vscode.window.showErrorMessage('Authentication failed. Please try again.');
+                return;
+            }
 
-async function activate(context) {
-  let disposable = vscode.commands.registerCommand(
-    "extension.createAndPushRepo",
-    async function () {
-      if (!CLIENT_ID) {
-        vscode.window.showErrorMessage("Missing CLIENT_ID in .env file!");
-        return;
-      }
+            // Step 2: Get repository details from user
+            const repoName = await vscode.window.showInputBox({
+                prompt: "Enter the new GitHub repository name:",
+                placeHolder: "my-awesome-project",
+                ignoreFocusOut: true,
+                validateInput: (value) => {
+                    if (!value || value.trim().length === 0) {
+                        return 'Repository name cannot be empty';
+                    }
+                    if (!/^[a-zA-Z0-9-_.]+$/.test(value)) {
+                        return 'Repository name can only contain letters, numbers, hyphens, underscores, and periods';
+                    }
+                    return null;
+                }
+            });
 
-      vscode.window.showInformationMessage("Redirecting to GitHub for authorization...");
+            if (!repoName) {
+                vscode.window.showWarningMessage('Repository creation cancelled.');
+                return;
+            }
 
-      // Step 1️⃣: Generate GitHub OAuth URL
-      const authUrl = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&scope=repo`;
+            const repoDescription = await vscode.window.showInputBox({
+                prompt: "Enter repository description (optional):",
+                placeHolder: "My awesome project description",
+                ignoreFocusOut: true
+            });
 
-      // Step 2️⃣: Open GitHub OAuth URL in default browser
-      vscode.env.openExternal(vscode.Uri.parse(authUrl));
+            const isPrivate = await vscode.window.showQuickPick(
+                ['Public', 'Private'],
+                {
+                    placeHolder: 'Select repository visibility',
+                    ignoreFocusOut: true
+                }
+            );
 
-      // Step 3️⃣: Notify user
-      vscode.window.showInformationMessage(
-        "Authorize GitHub in your browser. Once authorized, return to VS Code."
-      );
+            if (!isPrivate) {
+                vscode.window.showWarningMessage('Repository creation cancelled.');
+                return;
+            }
 
-      // ⚙️ Optional improvement:
-      // You can ask the user to paste a code/token that backend logs or sends later.
-      vscode.window.showInformationMessage(
-        "GitEasy cloud backend is handling authorization securely."
-      );
-    }
-  );
+            // Get workspace folder
+            const workspaceFolders = vscode.workspace.workspaceFolders;
+            if (!workspaceFolders || workspaceFolders.length === 0) {
+                vscode.window.showErrorMessage('No workspace folder is open. Please open a folder first.');
+                return;
+            }
 
-  context.subscriptions.push(disposable);
-}
+            const workspacePath = workspaceFolders[0].uri.fsPath;
 
-async function createAndPushRepo(accessToken) {
-  const workspaceFolders = vscode.workspace.workspaceFolders;
-  if (!workspaceFolders) {
-    vscode.window.showErrorMessage("No workspace folder is open in VS Code!");
-    return;
-  }
+            // Step 3: Create repository and push code
+            await vscode.window.withProgress({
+                location: vscode.ProgressLocation.Notification,
+                title: "GITEasy",
+                cancellable: false
+            }, async (progress) => {
+                progress.report({ message: "Creating GitHub repository..." });
+                
+                await createAndPushRepo(
+                    accessToken,
+                    repoName,
+                    repoDescription || '',
+                    isPrivate === 'Private',
+                    workspacePath,
+                    progress
+                );
+            });
 
-  const cwd = workspaceFolders[0].uri.fsPath;
-  const repoName = await vscode.window.showInputBox({
-    prompt: "Enter the new GitHub repository name:",
-    ignoreFocusOut: true,
-  });
+            vscode.window.showInformationMessage(
+                `Successfully created and pushed to GitHub repository: ${repoName}`,
+                );
 
-  if (!repoName) return;
+        } catch (error) {
+            console.error('Error in GITEasy:', error);
+            vscode.window.showErrorMessage(`GITEasy Error: ${error.message}`);
+        }
+    });
 
-  vscode.window.showInformationMessage("Creating GitHub repository...");
-
-  const response = await fetch("https://api.github.com/user/repos", {
-    method: "POST",
-    headers: {
-      Authorization: `token ${accessToken}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ name: repoName, private: false }),
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    vscode.window.showErrorMessage(`Repository creation failed: ${data.message}`);
-    return;
-  }
-
-  try {
-    vscode.window.showInformationMessage(`Repository created: ${data.html_url}`);
-
-    execSync("git init", { cwd, stdio: "inherit", shell: true });
-    execSync("git add .", { cwd, stdio: "inherit", shell: true });
-    execSync('git commit -m "Initial commit"', { cwd, stdio: "inherit", shell: true });
-    execSync("git branch -M main", { cwd, stdio: "inherit", shell: true });
-    execSync(`git remote add origin ${data.clone_url}`, { cwd, stdio: "inherit", shell: true });
-    execSync("git push -u origin main", { cwd, stdio: "inherit", shell: true });
-
-    vscode.window.showInformationMessage("Code pushed successfully to GitHub!");
-  } catch (err) {
-    vscode.window.showErrorMessage("Git push failed: " + err.message);
-  }
+    context.subscriptions.push(disposable);
 }
 
 function deactivate() {}
 
-module.exports = { activate, deactivate };
+module.exports = {
+    activate,
+    deactivate
+};
