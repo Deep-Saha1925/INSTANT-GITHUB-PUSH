@@ -124,7 +124,7 @@ The extension then commits your current project and pushes it to the new GitHub 
 
 Found a bug or have a feature request? 
 
-1. Visit [GitHub Issues](https://github.com/DeepSaha-1925/giteasy/issues)
+1. Visit [GitHub Issues](https://github.com/Deep-Saha1925/INSTANT-GITHUB-PUSH/issues)
 2. Check if it's already reported
 3. Create a new issue with details
 
@@ -150,14 +150,14 @@ Developed by **Deep Saha** — making developer workflows simpler and faster.
 ## ⭐ Support
 
 If you find this extension helpful:
-- ⭐ Star the [GitHub repository](https://github.com/DeepSaha-1925/giteasy)
+- ⭐ Star the [GitHub repository](https://github.com/Deep-Saha1925/INSTANT-GITHUB-PUSH)
 - 📝 Leave a review on the [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=DeepSaha-1925.giteasy)
-- 🐛 Report bugs or suggest features via [Issues](https://github.com/DeepSaha-1925/giteasy/issues)
+- 🐛 Report bugs or suggest features via [Issues](https://github.com/Deep-Saha1925/INSTANT-GITHUB-PUSH/issues)
 
 ---
 
 <div align="center">
   Made with ❤️ by Deep Saha
   
-  **[Install Now](https://marketplace.visualstudio.com/items?itemName=DeepSaha-1925.giteasy)** | **[GitHub](https://github.com/DeepSaha-1925/giteasy)** | **[Report Issue](https://github.com/DeepSaha-1925/giteasy/issues)**
+  **[Install Now](https://marketplace.visualstudio.com/items?itemName=DeepSaha-1925.giteasy)** | **[GitHub](https://github.com/Deep-Saha1925/INSTANT-GITHUB-PUSH)** | **[Report Issue](https://github.com/Deep-Saha1925/INSTANT-GITHUB-PUSH/issues)**
 </div>
