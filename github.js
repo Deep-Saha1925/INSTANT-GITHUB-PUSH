@@ -132,4 +132,71 @@ build/
     }
 }
 
-module.exports = { createAndPushRepo };
+async function pushChangesToExistingRepo(workspacePath, progress) {
+    try {
+        // Check if git repo exists
+        try {
+            execSync('git rev-parse --git-dir', { cwd: workspacePath, stdio: 'ignore' });
+        } catch (error) {
+            throw new Error('Not a git repository. Please initialize git first or use "Create and Push to GitHub" for new repos.');
+        }
+
+        // Check if remote exists
+        let remoteUrl;
+        try {
+            remoteUrl = execSync('git remote get-url origin', { cwd: workspacePath }).toString().trim();
+        } catch (error) {
+            throw new Error('No remote repository configured. Please use "Create and Push to GitHub" first.');
+        }
+
+        // Check if there are changes
+        const status = execSync('git status --porcelain', { cwd: workspacePath }).toString();
+        if (!status.trim()) {
+            throw new Error('No changes to commit. Working directory is clean.');
+        }
+
+        // Add all changes
+        progress.report({ message: "Adding changes..." });
+        execSync('git add .', { cwd: workspacePath });
+
+        // Get commit message from user
+        const vscode = require('vscode');
+        const commitMessage = await vscode.window.showInputBox({
+            prompt: "Enter commit message:",
+            placeHolder: "Updated files",
+            ignoreFocusOut: true,
+            validateInput: (value) => {
+                if (!value || value.trim().length === 0) {
+                    return 'Commit message cannot be empty';
+                }
+                return null;
+            }
+        });
+
+        if (!commitMessage) {
+            throw new Error('Commit cancelled - no message provided.');
+        }
+
+        // Commit changes
+        progress.report({ message: "Committing changes..." });
+        execSync(`git commit -m "${commitMessage.replace(/"/g, '\\"')}"`, { cwd: workspacePath });
+
+        // Push to remote
+        progress.report({ message: "Pushing to GitHub..." });
+        execSync('git push origin main', { cwd: workspacePath });
+
+        progress.report({ message: "Complete!" });
+
+        return {
+            success: true,
+            message: 'Changes pushed successfully!',
+            remoteUrl: remoteUrl
+        };
+
+    } catch (error) {
+        console.error('Error in pushChangesToExistingRepo:', error);
+        throw error;
+    }
+}
+
+module.exports = { createAndPushRepo, pushChangesToExistingRepo };
