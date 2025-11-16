@@ -2,7 +2,7 @@
   "name": "giteasy",
   "displayName": "GITEasy",
   "description": "Automatically create and push your code to GitHub without manual work",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "DeepSaha-1925",
   "icon": "images/icon.png",
   "engines": {
