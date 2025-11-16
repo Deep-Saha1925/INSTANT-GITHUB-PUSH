@@ -19,28 +19,31 @@
 - 🔐 **GitHub OAuth Authorization** — Securely connects to your GitHub account through OAuth.  
 - 🧠 **Automatic Repository Creation** — Instantly create a new repository right from VS Code.  
 - ⚡ **One-Click Push** — Push your current workspace to GitHub in seconds.  
+- 🔄 **Push Changes to Existing Repos** — Commit and push updates to your existing GitHub repositories.  
 - 🪶 **Simple Workflow** — No terminal commands, no manual configuration.  
 
 ---
 
 ## 🧩 How to Use
 
-### 1️⃣ Install the Extension
+### 🆕 For New Projects: Create and Push to GitHub
+
+#### 1️⃣ Install the Extension
 Search for **"GitEasy"** in the VS Code Extensions Marketplace and install it.
 
-### 2️⃣ Open Your Project Folder
+#### 2️⃣ Open Your Project Folder
 Make sure your VS Code workspace contains the project you want to upload to GitHub.
 
-### 3️⃣ Run the Command
+#### 3️⃣ Run the Command
 Press `Ctrl + Shift + P` (or `Cmd + Shift + P` on macOS).  
 Type **"Create and Push to GitHub"** and hit Enter.
 
-### 4️⃣ Authorize GitHub
+#### 4️⃣ Authorize GitHub
 A browser window will open asking for GitHub authorization.  
 Log in and allow the extension to access your account.  
 Once authorized, the extension will automatically create a new GitHub repository for you.
 
-### 5️⃣ Enter Repository Details
+#### 5️⃣ Enter Repository Details
 You'll be prompted to enter:
 - **Repository name** (e.g., `my-awesome-project`)
 - **Description** (optional)
@@ -50,7 +53,31 @@ The extension then commits your current project and pushes it to the new GitHub 
 
 ---
 
-## 🧾 Example Flow
+### 🔄 For Existing Projects: Push Changes to GitHub
+
+#### 1️⃣ Make Your Changes
+Edit, add, or delete files in your project as needed.
+
+#### 2️⃣ Run the Push Command
+Press `Ctrl + Shift + P` (or `Cmd + Shift + P` on macOS).  
+Type **"Push Changes to GitHub"** and hit Enter.
+
+#### 3️⃣ Enter Commit Message
+You'll be prompted to enter a commit message describing your changes.
+
+#### 4️⃣ Done!
+GitEasy will automatically:
+- Stage all your changes (`git add .`)
+- Commit with your message
+- Push to your GitHub repository
+
+**Note:** This feature works with repositories that already have a remote configured.
+
+---
+
+## 🧾 Example Flows
+
+### Creating a New Repository
 ```bash
 > Ctrl + Shift + P  
 > Create and Push to GitHub  
@@ -59,6 +86,14 @@ The extension then commits your current project and pushes it to the new GitHub 
 > Enter Description: My awesome project (optional)
 > Select Visibility: Public
 > ✅ Successfully pushed to https://github.com/<your-username>/instant-github-demo
+```
+
+### Pushing Changes to Existing Repository
+```bash
+> Ctrl + Shift + P  
+> Push Changes to GitHub
+> Enter Commit Message: Updated homepage design
+> ✅ Changes pushed to GitHub successfully!
 ```
 
 ---
@@ -84,7 +119,8 @@ The extension then commits your current project and pushes it to the new GitHub 
 
 | Command | Description |
 |---------|-------------|
-| `GitEasy: Create and Push to GitHub` | Create a new repository and push your code |
+| `GitEasy: Create and Push to GitHub` | Create a new repository and push your code (for new projects) |
+| `GitEasy: Push Changes to GitHub` | Commit and push changes to existing repository (for ongoing work) |
 
 **Keyboard Shortcut:** `Ctrl+Shift+G` then `Ctrl+Shift+P` (or use Command Palette)
 
@@ -104,6 +140,15 @@ The extension then commits your current project and pushes it to the new GitHub 
 ### "Repository already exists"
 **Solution:** Choose a different repository name or delete the existing one on GitHub.
 
+### "Not a git repository" (when using Push Changes)
+**Solution:** This command only works with existing Git repositories. Use "Create and Push to GitHub" for new projects.
+
+### "No remote repository configured"
+**Solution:** Your project needs to have a GitHub remote configured. Use "Create and Push to GitHub" to set it up.
+
+### "No changes to commit"
+**Solution:** You haven't made any changes since your last commit. Modify some files first.
+
 ### Git errors
 **Solution:** 
 - Ensure Git is installed: Run `git --version` in terminal
@@ -117,6 +162,8 @@ The extension then commits your current project and pushes it to the new GitHub 
 - 🔄 **Persistent Auth**: Your GitHub authentication persists across VS Code sessions
 - 🌳 **Main Branch**: Repositories are created with `main` as the default branch
 - 📝 **Initial Commit**: First commit message is "Initial commit via GITEasy"
+- ⚡ **Quick Updates**: Use "Push Changes" for fast commits without leaving VS Code
+- 🎯 **Choose the Right Command**: Use "Create and Push" for new projects, "Push Changes" for existing ones
 
 ---
 
@@ -143,7 +190,7 @@ MIT License - See [LICENSE](LICENSE) file for details
 Developed by **Deep Saha** — making developer workflows simpler and faster.
 
 📧 Email: your.email@example.com  
-🐙 GitHub: [@DeepSaha-1925](https://github.com/DeepSaha-1925)
+🐙 GitHub: [@Deep-Saha1925](https://github.com/Deep-Saha1925)
 
 ---
 
